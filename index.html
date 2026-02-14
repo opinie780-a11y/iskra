@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<title>Drużyna Harcerska ISKRA</title>
+
+<style>
+body{
+margin:0;
+font-family:Arial;
+background:linear-gradient(to bottom,#1a0000,#7a0000);
+color:white;
+}
+
+header{
+background:linear-gradient(to right,#ff3c00,#ffae00);
+padding:20px;
+text-align:center;
+font-size:30px;
+font-weight:bold;
+letter-spacing:2px;
+}
+
+nav{
+background:#330000;
+text-align:center;
+}
+
+nav a{
+color:white;
+text-decoration:none;
+padding:14px 20px;
+display:inline-block;
+cursor:pointer;
+}
+
+nav a:hover{
+background:#ff4500;
+}
+
+.dropdown{
+display:inline-block;
+position:relative;
+}
+
+.dropdown-content{
+display:none;
+position:absolute;
+background:#660000;
+min-width:200px;
+}
+
+.dropdown-content a{
+display:block;
+}
+
+.dropdown:hover .dropdown-content{
+display:block;
+}
+
+.section{
+display:none;
+padding:40px;
+max-width:1000px;
+margin:auto;
+}
+
+.active{
+display:block;
+}
+
+.hero{
+position:relative;
+}
+
+.hero img{
+width:100%;
+height:500px;
+object-fit:cover;
+}
+
+.hero-text{
+position:absolute;
+top:50%;
+left:50%;
+transform:translate(-50%,-50%);
+font-size:100px;
+color:#ffae00;
+text-shadow:0 0 30px red;
+}
+</style>
+
+<script>
+function showSection(id){
+var sections=document.querySelectorAll(".section");
+sections.forEach(function(sec){
+sec.classList.remove("active");
+});
+document.getElementById(id).classList.add("active");
+}
+</script>
+
+</head>
+<body>
+
+<header>🔥 Drużyna Harcerska ISKRA 🔥</header>
+
+<nav>
+<a onclick="showSection('home')">Strona Główna</a>
+<a onclick="showSection('historia')">Historia</a>
+<a onclick="showSection('aktualnosci')">Aktualności</a>
+<a onclick="showSection('spiewnik')">Śpiewnik</a>
+
+<div class="dropdown">
+<a>Hufiec ▼</a>
+<div class="dropdown-content">
+<a onclick="showSection('hufiec')">Historia Hufca</a>
+<a href="https://gorczanski.zhp.pl/" target="_blank">Strona Hufca</a>
+<a href="mailto:gorczanski@zhp.pl">Kontakt</a>
+</div>
+</div>
+</nav>
+
+<!-- STRONA GŁÓWNA -->
+<div id="home" class="section active">
+<div class="hero">
+<img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb">
+<div class="hero-text">SOON...</div>
+</div>
+</div>
+
+<!-- HISTORIA DRUŻYNY -->
+<div id="historia" class="section">
+<h1 style="color:orange;">Historia Drużyny ISKRA</h1>
+<p>
+Drużyna Harcerska Iskra została założona w 2025 roku przez grupę młodych pasjonatów harcerstwa,
+którzy chcieli stworzyć miejsce pełne ognia, energii i braterstwa.
+</p>
+<p>
+Od początku organizujemy biwaki, ogniska, rajdy i akcje społeczne.
+Iskra symbolizuje płomień, który rozpala w sercu harcerza odwagę,
+honor i gotowość do służby.
+</p>
+</div>
+
+<!-- AKTUALNOŚCI -->
+<div id="aktualnosci" class="section" style="text-align:center;">
+<h1 style="font-size:120px;color:orange;text-shadow:0 0 30px red;">SOON</h1>
+</div>
+
+<!-- ŚPIEWNIK -->
+<div id="spiewnik" class="section">
+<h1 style="color:orange;">Śpiewnik Harcerski</h1>
+
+<h2>Płonie ognisko i szumią knieje</h2>
+<p>Płonie ognisko i szumią knieje,<br>
+Drużynowy jest wśród nas...</p>
+
+<h2>Szara lilijka</h2>
+<p>Gdzie strumyk płynie z wolna,<br>
+Rozsiewa zioła maj...</p>
+
+<h2>Krajka</h2>
+<p>Krajka, krajka, krajeczka,<br>
+Chodźmy wszyscy do miasteczka...</p>
+</div>
+
+<!-- HUFIEC -->
+<div id="hufiec" class="section">
+<h1 style="color:orange;">Hufiec Gorczański</h1>
+
+<h2>Historia Hufca</h2>
+<p>
+Hufiec Gorczański ZHP działa na terenie regionu górskiego
+i od lat wspiera rozwój młodzieży poprzez harcerskie wartości.
+</p>
+<p>
+Organizuje obozy, rajdy, szkolenia oraz wydarzenia patriotyczne.
+Jest miejscem, gdzie tradycja spotyka się z nowoczesnością,
+a harcerze rozwijają swoje umiejętności i charakter.
+</p>
+
+<p>
+Strona hufca: <a href="https://gorczanski.zhp.pl/" target="_blank" style="color:orange;">gorczanski.zhp.pl</a><br>
+Kontakt: <a href="mailto:gorczanski@zhp.pl" style="color:orange;">gorczanski@zhp.pl</a>
+</p>
+
+</div>
+
+</body>
+</html>
