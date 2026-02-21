@@ -93,8 +93,8 @@ text-shadow:0 0 30px red;
 background:#330000;
 padding:20px;
 border-radius:15px;
-cursor:pointer;
 margin-bottom:20px;
+cursor:pointer;
 }
 
 .news-card img{
@@ -139,10 +139,7 @@ const users={
 }
 
 function showSection(id){
-var sections=document.querySelectorAll(".section");
-sections.forEach(function(sec){
-sec.classList.remove("active");
-});
+document.querySelectorAll(".section").forEach(s=>s.classList.remove("active"));
 document.getElementById(id).classList.add("active");
 if(id==="aktualnosci") renderNews();
 }
@@ -167,7 +164,6 @@ location.reload();
 function renderNews(){
 let container=document.getElementById("newsContainer");
 container.innerHTML="";
-
 let news=JSON.parse(localStorage.getItem("news"))||[];
 
 if(localStorage.getItem("logged")==="true"){
@@ -178,27 +174,39 @@ document.getElementById("adminPanel").style.display="none";
 
 news.forEach((n,index)=>{
 container.innerHTML+=`
-<div class="news-card">
+<div class="news-card" onclick="openNews(${index})">
 <h2 style="color:orange;">${n.title}</h2>
 <img src="${n.image}">
-<p>${n.content}</p>
+<p>${n.short}</p>
 </div>
 `;
 });
 }
 
+function openNews(index){
+let news=JSON.parse(localStorage.getItem("news"))||[];
+let n=news[index];
+document.getElementById("newsContainer").innerHTML=`
+<h1 style="color:orange;">${n.title}</h1>
+<img src="${n.image}" style="width:100%;border-radius:15px;margin-bottom:20px;">
+<p>${n.full}</p>
+<br>
+<button onclick="renderNews()">← Powrót</button>
+`;
+}
+
 function addNews(){
 let title=document.getElementById("newTitle").value;
 let image=document.getElementById("newImage").value;
-let content=document.getElementById("newContent").value;
+let short=document.getElementById("newShort").value;
+let full=document.getElementById("newFull").value;
 
 let news=JSON.parse(localStorage.getItem("news"))||[];
-news.unshift({title,image,content});
+news.unshift({title,image,short,full});
 localStorage.setItem("news",JSON.stringify(news));
 renderNews();
 }
 </script>
-
 </head>
 <body>
 
@@ -220,7 +228,6 @@ renderNews();
 </div>
 </nav>
 
-<!-- STRONA GŁÓWNA -->
 <div id="home" class="section active">
 <div class="hero">
 <img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb">
@@ -228,20 +235,19 @@ renderNews();
 </div>
 </div>
 
-<!-- HISTORIA -->
 <div id="historia" class="section">
 <h1 style="color:orange;">Historia Drużyny ISKRA</h1>
-<p>Drużyna Harcerska Iskra została założona w 2025 roku w Mszanie Dolnej.</p>
+<p>Drużyna powstała w 2025 roku w Mszanie Dolnej. Od początku skupia młodzież pełną energii i pasji do harcerstwa. Organizujemy biwaki, rajdy górskie, ogniska oraz akcje społeczne. Naszym celem jest rozwój charakteru, odpowiedzialności i braterstwa.</p>
 </div>
 
-<!-- AKTUALNOŚCI -->
 <div id="aktualnosci" class="section">
 
 <div id="adminPanel" class="admin-panel" style="display:none">
 <h2>Panel Admina</h2>
 <input id="newTitle" placeholder="Tytuł">
 <input id="newImage" placeholder="Link do zdjęcia">
-<textarea id="newContent" placeholder="Treść"></textarea>
+<textarea id="newShort" placeholder="Krótki opis (widoczny na liście)"></textarea>
+<textarea id="newFull" placeholder="Pełna treść artykułu"></textarea>
 <button onclick="addNews()">Dodaj aktualność</button>
 <button onclick="logout()">Wyloguj</button>
 </div>
@@ -250,17 +256,23 @@ renderNews();
 
 </div>
 
-<!-- ŚPIEWNIK -->
 <div id="spiewnik" class="section">
 <h1 style="color:orange;">Śpiewnik Harcerski</h1>
 <h2>Płonie ognisko i szumią knieje</h2>
 <p>Płonie ognisko i szumią knieje...</p>
 </div>
 
-<!-- HUFIEC -->
 <div id="hufiec" class="section">
-<h1 style="color:orange;">Hufiec Gorczański</h1>
-<p>Hufiec wspiera rozwój młodzieży poprzez harcerskie wartości.</p>
+<h1 style="color:orange;">Hufiec Gorczański ZHP</h1>
+<p>Hufiec Gorczański działa na terenie regionu Gorców i Beskidu Wyspowego. Skupia drużyny harcerskie i zuchowe z okolicznych miejscowości, wspierając ich rozwój poprzez organizację obozów, rajdów, kursów i wydarzeń patriotycznych.</p>
+<p>Od lat hufiec buduje środowisko oparte na braterstwie, służbie i tradycji harcerskiej. Organizuje szkolenia dla kadry, wspiera inicjatywy społeczne oraz współpracuje z lokalnymi instytucjami.</p>
+<p>Dzięki zaangażowaniu instruktorów i harcerzy hufiec stale się rozwija, dając młodzieży możliwość zdobywania stopni, sprawności oraz przeżywania prawdziwej harcerskiej przygody.</p>
+
+<br><br>
+<p>
+Strona hufca: <a href="https://gorczanski.zhp.pl/" target="_blank" style="color:orange;">gorczanski.zhp.pl</a><br>
+Kontakt: <a href="mailto:gorczanski@zhp.pl" style="color:orange;">gorczanski@zhp.pl</a>
+</p>
 </div>
 
 <div id="loginBox">
@@ -280,7 +292,8 @@ localStorage.setItem("news",JSON.stringify([
 {
 title:"🔥 Poszukujemy harcerzy i harcerek!",
 image:"https://images.unsplash.com/photo-1529333166437-7750a6dd5a70",
-content:"Poszukujemy harcerzy i harcerek do naszej drużyny w Mszanie Dolnej. Chcesz przeżyć przygodę, nauczyć się nowych rzeczy i poznać świetnych ludzi? Napisz do nas: ktosstos4@gmail.com"
+short:"Trwa nabór do drużyny w Mszanie Dolnej. Kliknij aby zobaczyć szczegóły.",
+full:"Poszukujemy harcerzy i harcerek do naszej drużyny w Mszanie Dolnej. Jeśli chcesz przeżyć przygodę, nauczyć się pracy zespołowej, survivalu i wziąć udział w obozach harcerskich – dołącz do nas! Kontakt: ktosstos4@gmail.com"
 }
 ]));
 }
