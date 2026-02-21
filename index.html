@@ -79,10 +79,9 @@
             display: block;
         }
 
-        /* Poprawiony Hero Image */
         .hero {
             position: relative;
-            height: 300px; /* Zmniejszona wysokość */
+            height: 250px; /* Jeszcze nieco mniejszy, żeby nie zasłaniał */
             overflow: hidden;
             border-radius: 15px;
             margin-bottom: 30px;
@@ -92,7 +91,7 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
-            filter: brightness(50%);
+            filter: brightness(40%);
         }
 
         .hero-text {
@@ -135,7 +134,9 @@
             margin: 10px 0;
             box-sizing: border-box;
             border-radius: 5px;
-            border: none;
+            border: 1px solid #440000;
+            background: #1a0000;
+            color: white;
         }
 
         button {
@@ -145,25 +146,26 @@
             cursor: pointer;
             font-weight: bold;
             border-radius: 5px;
-            transition: 0.3s;
+            transition: 0.2s;
         }
 
         button:hover {
             background: #ffae00;
-            transform: scale(1.05);
         }
 
-        /* Logowanie ukryte na dole strony głównej */
         #loginWrapper {
-            margin-top: 100px;
-            padding: 20px;
+            margin-top: 80px;
+            padding: 40px 20px;
             border-top: 1px solid #440000;
             text-align: center;
-            opacity: 0.6;
         }
 
-        #loginWrapper:hover {
-            opacity: 1;
+        #loginBox {
+            max-width: 300px;
+            margin: auto;
+            background: rgba(0,0,0,0.2);
+            padding: 20px;
+            border-radius: 10px;
         }
 
         .spiewnik-tekst {
@@ -172,6 +174,7 @@
             border-radius: 10px;
             white-space: pre-line;
             font-style: italic;
+            border-left: 4px solid orange;
         }
     </style>
 
@@ -180,6 +183,14 @@
             "ktosstos4@iskra.com": "S@eba124",
             "edziktoemo@iskra.com": "jestememo123"
         };
+
+        // GŁÓWNA AKTUALNOŚĆ (NAPRAWIONA)
+        const defaultNews = [{
+            title: "🔥 Poszukujemy harcerzy i harcerek!",
+            image: "https://images.unsplash.com/photo-1529333166437-7750a6dd5a70",
+            short: "Trwa nabór do drużyny w Mszanie Dolnej. Kliknij aby zobaczyć szczegóły.",
+            full: "Poszukujemy harcerzy i harcerek do naszej drużyny w Mszanie Dolnej. Jeśli chcesz przeżyć przygodę, nauczyć się pracy zespołowej, survivalu i wziąć udział w obozach harcerskich – dołącz do nas!<br><br><b>Kontakt:</b> ktosstos4@gmail.com"
+        }];
 
         function showSection(id) {
             document.querySelectorAll(".section").forEach(s => s.classList.remove("active"));
@@ -192,10 +203,10 @@
             let pass = document.getElementById("password").value;
             if (users[email] === pass) {
                 localStorage.setItem("logged", "true");
-                alert("Zalogowano pomyślnie");
+                alert("Zalogowano!");
                 location.reload();
             } else {
-                alert("Błędne dane logowania");
+                alert("Błędne dane");
             }
         }
 
@@ -207,13 +218,20 @@
         function renderNews() {
             let container = document.getElementById("newsContainer");
             container.innerHTML = "";
-            let news = JSON.parse(localStorage.getItem("news")) || [];
+            
+            // Pobieranie i czyszczenie błędnych danych
+            let news = JSON.parse(localStorage.getItem("news"));
+            if(!news || !Array.isArray(news) || news.length === 0 || !news[0].title) {
+                news = defaultNews;
+                localStorage.setItem("news", JSON.stringify(defaultNews));
+            }
 
             if (localStorage.getItem("logged") === "true") {
                 document.getElementById("adminPanel").style.display = "block";
             }
 
             news.forEach((n, index) => {
+                if(!n.title) return; // Pomiń jeśli uszkodzone
                 container.innerHTML += `
                     <div class="news-card">
                         <h2 style="color:orange;">${n.title}</h2>
@@ -227,14 +245,14 @@
         }
 
         function openNews(index) {
-            let news = JSON.parse(localStorage.getItem("news")) || [];
+            let news = JSON.parse(localStorage.getItem("news"));
             let n = news[index];
             document.getElementById("newsContainer").innerHTML = `
                 <h1 style="color:orange;">${n.title}</h1>
                 <img src="${n.image}" style="width:100%; border-radius:15px; margin-bottom:20px;">
-                <p>${n.full}</p>
+                <div style="font-size:18px;">${n.full}</div>
                 <br>
-                <button onclick="renderNews()">← Powrót do listy</button>
+                <button onclick="renderNews()">← Powrót</button>
             `;
         }
 
@@ -244,20 +262,39 @@
             let short = document.getElementById("newShort").value;
             let full = document.getElementById("newFull").value;
 
-            if(!title || !image) return alert("Uzupełnij chociaż tytuł i zdjęcie!");
+            if(!title) return alert("Podaj chociaż tytuł!");
 
             let news = JSON.parse(localStorage.getItem("news")) || [];
             news.unshift({title, image, short, full});
             localStorage.setItem("news", JSON.stringify(news));
             renderNews();
+            
+            // Wyczyść pola
+            document.getElementById("newTitle").value = "";
+            document.getElementById("newImage").value = "";
+            document.getElementById("newShort").value = "";
+            document.getElementById("newFull").value = "";
         }
 
         function deleteNews(index) {
-            let news = JSON.parse(localStorage.getItem("news")) || [];
+            let news = JSON.parse(localStorage.getItem("news"));
             news.splice(index, 1);
             localStorage.setItem("news", JSON.stringify(news));
             renderNews();
         }
+
+        window.onload = function() {
+            // Sprawdzanie logowania
+            if(localStorage.getItem("logged") === "true") {
+                document.getElementById("loginInputs").style.display = "none";
+                document.getElementById("logoutBtn").style.display = "inline-block";
+            }
+            // Automatyczna naprawa bazy przy starcie (usuwa śmieci)
+            let currentNews = JSON.parse(localStorage.getItem("news"));
+            if(!currentNews || currentNews.length === 0 || !currentNews[0].title || currentNews.length > 5) {
+                localStorage.setItem("news", JSON.stringify(defaultNews));
+            }
+        };
     </script>
 </head>
 <body>
@@ -282,42 +319,40 @@
 
 <div id="home" class="section active">
     <div class="hero">
-        <img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb" alt="Góry">
+        <img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb">
         <div class="hero-text">SOON...</div>
     </div>
     
-    <h2>Witaj w iskrowej rodzinie!</h2>
-    <p>To miejsce dla każdego, kto kocha przyrodę, przygodę i braterską atmosferę. Znajdziesz tutaj informacje o naszych działaniach, wyjazdach i historii.</p>
+    <h2 style="text-align:center;">Czuwaj!</h2>
+    <p>Witaj na oficjalnej stronie Drużyny Harcerskiej ISKRA z Mszany Dolnej. Jesteśmy grupą młodych ludzi, których łączy pasja do gór, przygody i wspólnego działania.</p>
 
     <div id="loginWrapper">
         <div id="loginBox">
-            <h3>Panel Kadry</h3>
+            <p style="font-size: 12px; color: #888;">Panel administracyjny</p>
             <div id="loginInputs">
-                <input id="email" placeholder="Email" style="max-width:250px;">
-                <input id="password" type="password" placeholder="Hasło" style="max-width:250px;">
-                <br>
+                <input id="email" placeholder="Email">
+                <input id="password" type="password" placeholder="Hasło">
                 <button onclick="login()">Zaloguj</button>
             </div>
-            <button id="logoutBtn" onclick="logout()" style="display:none; background: gray;">Wyloguj</button>
+            <button id="logoutBtn" onclick="logout()" style="display:none; background: #555;">Wyloguj się</button>
         </div>
     </div>
 </div>
 
 <div id="historia" class="section">
     <h1 style="color:orange;">Historia Drużyny ISKRA</h1>
-    <p>Drużyna powstała w 2025 roku w Mszanie Dolnej. Od początku skupia młodzież pełną energii i pasji do harcerstwa. Organizujemy biwaki, rajdy górskie, ogniska oraz akcje społeczne. Naszym celem jest rozwój charakteru, odpowiedzialności i braterstwa.</p>
+    <p>Drużyna powstała w 2025 roku w Mszanie Dolnej. Od samego początku stawiamy na rozwój, braterstwo i patriotyzm. Nasze barwy symbolizują energię i ogień, który płonie w naszych sercach podczas każdego rajdu i ogniska.</p>
 </div>
 
 <div id="aktualnosci" class="section">
     <div id="adminPanel" class="admin-panel" style="display:none">
-        <h2>Panel Admina - Dodaj wpis</h2>
-        <input id="newTitle" placeholder="Tytuł">
-        <input id="newImage" placeholder="Link do zdjęcia (URL)">
-        <textarea id="newShort" placeholder="Krótki opis (widoczny na liście)"></textarea>
-        <textarea id="newFull" placeholder="Pełna treść artykułu"></textarea>
-        <button onclick="addNews()">Opublikuj Aktualność</button>
+        <h2>Panel Admina</h2>
+        <input id="newTitle" placeholder="Tytuł wpisu">
+        <input id="newImage" placeholder="Link do zdjęcia">
+        <textarea id="newShort" placeholder="Krótki opis..."></textarea>
+        <textarea id="newFull" placeholder="Pełna treść..."></textarea>
+        <button onclick="addNews()">Dodaj post</button>
     </div>
-
     <div id="newsContainer"></div>
 </div>
 
@@ -349,36 +384,10 @@
 
 <div id="hufiec" class="section">
     <h1 style="color:orange;">Hufiec Gorczański ZHP</h1>
-    <p>Hufiec Gorczański działa na terenie regionu Gorców i Beskidu Wyspowego. Skupia drużyny harcerskie i zuchowe z okolicznych miejscowości.</p>
-    <p>Od lat hufiec buduje środowisko oparte na braterstwie, służbie i tradycji harcerskiej. Organizuje szkolenia dla kadry, wspiera inicjatywy społeczne oraz współpracuje z lokalnymi instytucjami.</p>
+    <p>Hufiec Gorczański to nasza jednostka nadrzędna, która wspiera nas w codziennej służbie. Działa na terenie pięknych Gorców, dbając o tradycję i wychowanie kolejnych pokoleń zuchów i harcerzy.</p>
+    <br>
+    <p><b>Strona WWW:</b> <a href="https://gorczanski.zhp.pl/" target="_blank" style="color:orange;">gorczanski.zhp.pl</a></p>
 </div>
-
-<script>
-    // Inicjalizacja danych i sprawdzanie sesji
-    window.onload = function() {
-        if(localStorage.getItem("logged") === "true") {
-            document.getElementById("loginInputs").style.display = "none";
-            document.getElementById("logoutBtn").style.display = "inline-block";
-        }
-
-        // Resetowanie aktualności do stanu początkowego (usunięcie śmieci)
-        const initialNews = [
-            {
-                title: "🔥 Poszukujemy harcerzy i harcerek!",
-                image: "https://images.unsplash.com/photo-1529333166437-7750a6dd5a70",
-                short: "Trwa nabór do drużyny w Mszanie Dolnej. Kliknij aby zobaczyć szczegóły.",
-                full: "Poszukujemy harcerzy i harcerek do naszej drużyny w Mszanie Dolnej. Jeśli chcesz przeżyć przygodę, nauczyć się pracy zespołowej, survivalu i wziąć udział w obozach harcerskich – dołącz do nas! Kontakt: ktosstos4@gmail.com"
-            }
-        ];
-
-        // Jeśli chcesz wyczyścić stare wpisy (te dwa co dodałeś), odkomentuj linię poniżej na jedno odświeżenie:
-        // localStorage.setItem("news", JSON.stringify(initialNews));
-
-        if(!localStorage.getItem("news")){
-            localStorage.setItem("news", JSON.stringify(initialNews));
-        }
-    };
-</script>
 
 </body>
 </html>
